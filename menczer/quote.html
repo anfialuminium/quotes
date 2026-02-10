@@ -368,14 +368,6 @@
         </div>
 
         <div class="summary-area">
-            <div class="notes-area">
-                <h3>תנאים והערות:</h3>
-                <textarea id="generalNotes" placeholder="הכנס הערות לתנאי ההצעה, תשלום, אספקה וכו'...">
-- המחירים אינם כוללים מע"מ.
-- אספקה תוך 7 ימי עסקים.
-- תוקף ההצעה כפי שצוין לעיל.</textarea>
-            </div>
-
             <div class="totals-card">
                 <div class="total-row">
                     <span>סה"כ לפני מע"מ:</span>
@@ -599,7 +591,7 @@
                     date: document.getElementById('docDate').value,
                     validity: document.getElementById('docValidity').value
                 },
-                notes: document.getElementById('generalNotes').value
+                notes: ""
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             showStatus('נשמר בהצלחה! ✅');
@@ -616,7 +608,7 @@
                         document.getElementById('docValidity').value = data.meta.validity || "30 יום";
                     }
                     if (data.notes) {
-                        document.getElementById('generalNotes').value = data.notes;
+                        // notes removed from UI
                     }
                 } catch (e) {
                     console.error("Error loading data", e);
