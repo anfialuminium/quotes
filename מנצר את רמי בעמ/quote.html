@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>הצעת מחיר - אנפי</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --bg-body: #f1f5f9;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 50px;
+            box-shadow: var(--shadow);
+            border-radius: 8px;
+            position: relative;
+        }
+
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 30px;
+            margin-bottom: 30px;
+        }
+
+        .company-info img {
+            height: 80px;
+            margin-bottom: 15px;
+        }
+
+        .company-info p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .quote-title-area {
+            text-align: left;
+            direction: ltr;
+        }
+
+        .quote-title-area h1 {
+            color: var(--primary);
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            direction: rtl;
+        }
+
+        .quote-meta-item {
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: var(--text-muted);
+            direction: rtl;
+        }
+
+        /* Customer Section */
+        .customer-section {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            border: 1px solid var(--border);
+        }
+
+        .customer-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .customer-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .editable-input {
+            border: 1px solid transparent;
+            background: transparent;
+            padding: 5px;
+            font-size: 14px;
+            font-family: inherit;
+            width: 100%;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .editable-input:hover, .editable-input:focus {
+            background: white;
+            border-color: var(--border);
+        }
+
+        .editable-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Table Styles */
+        .table-wrap {
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            background: var(--primary);
+            color: white;
+        }
+
+        th {
+            padding: 12px 15px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background-color: #f8fafc;
+        }
+
+        .section-header td {
+            background-color: #f1f5f9;
+            font-weight: 700;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .item-row input {
+            width: 100%;
+        }
+
+        /* Summary Area */
+        .summary-area {
+            display: flex;
+            justify-content: flex-end;
+            gap: 50px;
+            margin-top: 20px;
+        }
+
+        .notes-area {
+            flex: 1;
+        }
+
+        .notes-area h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+        
+        .notes-area textarea {
+            width: 100%;
+            min-height: 120px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .totals-card {
+            width: 300px;
+            background: var(--white);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .total-row.grand-total {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid var(--primary);
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        /* Buttons & Actions */
+        .actions {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            font-family: inherit;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow);
+            min-width: 140px;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
+
+        .btn-secondary { background: white; color: var(--text-main); border: 1px solid var(--border); }
+        .btn-secondary:hover { background: #f8fafc; transform: translateY(-2px); }
+        
+        .btn-danger { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+        .btn-danger:hover { background: #fecaca; transform: translateY(-2px); }
+
+        .row-actions {
+            display: flex;
+            gap: 5px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        tr:hover .row-actions {
+            opacity: 1;
+        }
+
+        .btn-row {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: white;
+        }
+
+        .btn-row:hover { background: #f1f5f9; }
+
+        /* Print Styles */
+        @media print {
+            body { padding: 0; background-color: white; }
+            .container { box-shadow: none; width: 100%; max-width: none; padding: 20px; border-radius: 0; }
+            .actions, .no-print, .row-actions, .table-controls { display: none !important; }
+            .editable-input { padding: 0; border: none !important; background: transparent !important; }
+            .totals-card { border-width: 1px; }
+            
+            /* Grouping logic */
+            .section-group {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            
+            table { page-break-inside: auto; width: 100% !important; border-collapse: collapse !important; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            thead { display: table-header-group; } /* Ensure thead repeats if table splits */
+        }
+
+        .table-controls {
+            margin-bottom: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .save-status {
+            font-size: 12px;
+            color: #10b981;
+            font-weight: 600;
+            margin-top: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="actions no-print">
+        <button class="btn btn-primary" onclick="window.print()">🖨️ הדפסה / PDF</button>
+        <button class="btn btn-secondary" onclick="saveToLocal()">💾 שמירה (דפדפן)</button>
+        <button class="btn btn-secondary" onclick="addRow()">➕ הוספת שורה</button>
+        <button class="btn btn-secondary" onclick="addSection()">📂 הוספת סעיף</button>
+        <button class="btn btn-danger" onclick="resetAll()">🔄 איפוס הכל</button>
+        <div id="saveStatus" class="save-status"></div>
+    </div>
+
+    <div class="container" id="quoteContent">
+        <header class="header">
+            <div class="company-info">
+                <img src="../../crm/images/logo.png" alt="אנפי ייבוא ושיווק" onerror="this.src='../../logobig-wb.png'">
+                <p>📍 תל אביב</p>
+                <p>📞 טלפון: 050-6946650</p>
+                <p>✉️ אימייל: anfi@bezeqint.net</p>
+            </div>
+            
+            <div class="quote-title-area">
+                <h1>הצעת מחיר</h1>
+                <div class="quote-meta-item">
+                    <strong>תאריך:</strong> 
+                    <input type="text" id="docDate" class="editable-input" style="width: 100px; text-align: left;" value="10/02/2026">
+                </div>
+                <div class="quote-meta-item">
+                    <strong>תוקף:</strong> 
+                    <input type="text" id="docValidity" class="editable-input" style="width: 100px; text-align: left;" value="30 יום">
+                </div>
+            </div>
+        </header>
+
+        <section class="customer-section">
+            <div class="customer-group">
+                <label>שם העסק / לקוח</label>
+                <input type="text" id="customerName" class="editable-input" placeholder="הכנס שם לקוח..." value="מנצר את רמי בעמ">
+            </div>
+            <div class="customer-group">
+                <label>איש קשר</label>
+                <input type="text" id="customerContact" class="editable-input" placeholder="שם איש הקשר..." value="">
+            </div>
+            <div class="customer-group">
+                <label>טלפון</label>
+                <input type="text" id="customerPhone" class="editable-input" placeholder="מספר טלפון..." value="">
+            </div>
+            <div class="customer-group">
+                <label>עיר / כתובת</label>
+                <input type="text" id="customerCity" class="editable-input" placeholder="כתובת הלקוח..." value="">
+            </div>
+        </section>
+
+        <div class="table-wrap">
+            <table id="itemsTable">
+                <thead>
+                    <tr>
+                        <th style="width: 40px;">#</th>
+                        <th>תיאור הפריט</th>
+                        <th style="width: 80px;">כמות</th>
+                        <th style="width: 80px;">עובי/מידה</th>
+                        <th style="width: 100px;">מחיר יחידה</th>
+                        <th style="width: 100px;">סה"כ</th>
+                        <th class="no-print" style="width: 80px;">פעולות</th>
+                    </tr>
+                </thead>
+                <!-- Multiple tbodies will be injected here for grouping -->
+            </table>
+        </div>
+
+        <div class="summary-area">
+            <div class="notes-area">
+                <h3>תנאים והערות:</h3>
+                <textarea id="generalNotes" placeholder="הכנס הערות לתנאי ההצעה, תשלום, אספקה וכו'...">
+- המחירים אינם כוללים מע"מ.
+- אספקה תוך 7 ימי עסקים.
+- תוקף ההצעה כפי שצוין לעיל.</textarea>
+            </div>
+
+            <div class="totals-card">
+                <div class="total-row">
+                    <span>סה"כ לפני מע"מ:</span>
+                    <span id="sumNet">₪0.00</span>
+                </div>
+                <div class="total-row">
+                    <span>מע"מ (18%):</span>
+                    <span id="sumVat">₪0.00</span>
+                </div>
+                <div class="total-row grand-total">
+                    <span>סה"כ לתשלום:</span>
+                    <span id="sumGross">₪0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = "anfi_quote_data_manzer";
+        
+        let model = [
+            { type: "section", title: "חלון דגם 7000" },
+            { desc: "אטם צורתי אמבטיה", qty: 460, thickness: "0.25", price: 0 },
+            { desc: "אטם צורתי עליונה", qty: 730, thickness: "0.25", price: 0 },
+            { desc: "אטם שליבה שחור", qty: 320, thickness: "1.2", price: 0 },
+            { desc: "קוביה מוקצפת", qty: 460, thickness: "0.26", price: 0 },
+            { desc: "גלגל בודד מתכוונן - פלסטיק חדש", qty: 250, thickness: "12", price: 0 },
+            { desc: 'פקק 16 מ"מ', qty: 550, thickness: "0.12", price: 0 },
+            { desc: "סגר לחלון לחץ הזז – לא פלסטיק !", qty: 750, thickness: "4.9", price: 0 },
+            { desc: "גלגל פלסטיק בודד", qty: 150, thickness: "2.3", price: 0 },
+            { desc: "אטם צורתי 3 נתיבים", qty: 84, thickness: "0.31", price: 0 },
+            
+            { type: "section", title: "ויטרינה 9000" },
+            { desc: "אטם צורתי עליון 3 נתיבים", qty: 200, thickness: "0.64", price: 0 },
+            { desc: "אמבטיה 3 נתיבים", qty: 200, thickness: "0.64", price: 0 },
+            { desc: "אמבטיה 2 נתיבים", qty: 50, thickness: "0.55", price: 0 },
+            { desc: "עליונה 2 נתיבים", qty: 50, thickness: "0.55", price: 0 },
+            { desc: "אטם שליבה", qty: 130, thickness: "6", price: 0 },
+            { desc: "סגר חלון לחץ הזז", qty: 50, thickness: "4.90", price: 0 },
+            { desc: "סגר מנוף + ידית חיצונית", qty: 200, thickness: "לא לספק", price: 0 },
+            { desc: "גלגל חלון כפול", qty: 25, thickness: "29", price: 0 },
+            { desc: "גלגל HD כפול לדלת", qty: 150, thickness: "68", price: 0 },
+
+            { type: "section", title: "חלון 4500" },
+            { desc: "פינת משקוף / כנף מתיחה", qty: 1500, thickness: "לא לספק", price: 0 },
+            { desc: "פינת גומי סוס", qty: 750, thickness: "0.88", price: 0 },
+            { desc: 'מספריים לקיפ 60 ס"מ (זוג)', qty: 170, thickness: "25", price: 0 },
+            { desc: "ידית לחלון פתיחה", qty: 170, thickness: "14.9", price: 0 },
+            { desc: "פינת מגן לכנף", qty: 380, thickness: "0.31", price: 0 }
+        ];
+
+        function init() {
+            loadFromLocal();
+            render();
+            setupAutoSave();
+        }
+
+        function render() {
+            const table = document.getElementById('itemsTable');
+            // Remove all existing tbodies
+            const existingTbodies = table.querySelectorAll('tbody');
+            existingTbodies.forEach(b => b.remove());
+
+            let currentTbody = null;
+            let itemIndex = 1;
+
+            model.forEach((row, index) => {
+                if (row.type === 'section' || !currentTbody) {
+                    currentTbody = document.createElement('tbody');
+                    currentTbody.className = 'section-group';
+                    table.appendChild(currentTbody);
+                }
+
+                const tr = document.createElement('tr');
+                tr.setAttribute('data-model-index', index);
+                
+                if (row.type === 'section') {
+                    tr.className = 'section-header';
+                    tr.innerHTML = `
+                        <td></td>
+                        <td colspan="5">
+                            <input type="text" class="editable-input" style="font-weight: 700; color: var(--primary);" 
+                                   value="${row.title}" oninput="updateModel(${index}, 'title', this.value)">
+                        </td>
+                        <td class="no-print">
+                            <div class="row-actions">
+                                <button class="btn-row" onclick="removeRow(${index})">🗑️</button>
+                                <button class="btn-row" onclick="moveUp(${index})">🔼</button>
+                                <button class="btn-row" onclick="moveDown(${index})">🔽</button>
+                            </div>
+                        </td>
+                    `;
+                } else {
+                    tr.className = 'item-row';
+                    const total = (row.qty || 0) * (row.price || 0);
+                    tr.innerHTML = `
+                        <td>${itemIndex++}</td>
+                        <td>
+                            <input type="text" class="editable-input" value="${row.desc}" 
+                                   oninput="updateModel(${index}, 'desc', this.value)">
+                        </td>
+                        <td>
+                            <input type="number" class="editable-input" style="text-align: center;" 
+                                   value="${row.qty}" oninput="updateModel(${index}, 'qty', this.value)">
+                        </td>
+                        <td>
+                            <input type="text" class="editable-input" style="text-align: center;" 
+                                   value="${row.thickness}" oninput="updateModel(${index}, 'thickness', this.value)">
+                        </td>
+                        <td>
+                            <input type="number" step="0.01" class="editable-input" style="text-align: center;" 
+                                   value="${row.price}" oninput="updateModel(${index}, 'price', this.value)">
+                        </td>
+                        <td style="font-weight: 600;">₪${total.toLocaleString('he-IL', {minimumFractionDigits: 2})}</td>
+                        <td class="no-print">
+                            <div class="row-actions">
+                                <button class="btn-row" onclick="removeRow(${index})">🗑️</button>
+                                <button class="btn-row" onclick="moveUp(${index})">🔼</button>
+                                <button class="btn-row" onclick="moveDown(${index})">🔽</button>
+                            </div>
+                        </td>
+                    `;
+                }
+                currentTbody.appendChild(tr);
+            });
+
+            recalc();
+        }
+
+        function updateModel(index, key, value) {
+            if (model[index]) {
+                if (key === 'qty' || key === 'price') {
+                    model[index][key] = parseFloat(value) || 0;
+                    renderOnlyTotals(); // Optimization
+                } else {
+                    model[index][key] = value;
+                }
+            }
+        }
+
+        function recalc() {
+            let subtotal = 0;
+            model.forEach(row => {
+                if (row.type !== 'section') {
+                    subtotal += (row.qty || 0) * (row.price || 0);
+                }
+            });
+
+            const vat = subtotal * 0.18;
+            const total = subtotal + vat;
+
+            document.getElementById('sumNet').textContent = `₪${subtotal.toLocaleString('he-IL', {minimumFractionDigits: 2})}`;
+            document.getElementById('sumVat').textContent = `₪${vat.toLocaleString('he-IL', {minimumFractionDigits: 2})}`;
+            document.getElementById('sumGross').textContent = `₪${total.toLocaleString('he-IL', {minimumFractionDigits: 2})}`;
+        }
+
+        function renderOnlyTotals() {
+            recalc();
+            model.forEach((m, idx) => {
+               if (m.type !== 'section') {
+                   const tr = document.querySelector(`tr[data-model-index="${idx}"]`);
+                   if (tr) {
+                       const totalCell = tr.querySelector('td:nth-child(6)');
+                       const total = (m.qty || 0) * (m.price || 0);
+                       totalCell.textContent = `₪${total.toLocaleString('he-IL', {minimumFractionDigits: 2})}`;
+                   }
+               }
+            });
+        }
+
+        function addRow() {
+            model.push({ desc: "פריט חדש", qty: 1, thickness: "-", price: 0 });
+            render();
+        }
+
+        function addSection() {
+            model.push({ type: "section", title: "סעיף חדש" });
+            render();
+        }
+
+        function removeRow(index) {
+            const targetRow = document.querySelector(`tr[data-model-index="${index}"]`);
+            if (!targetRow) return;
+
+            targetRow.className = 'item-row no-print';
+            targetRow.style.backgroundColor = '#fff1f2';
+            targetRow.innerHTML = `
+                <td colspan="6" style="text-align: center; padding: 15px; color: #dc2626; font-weight: 700;">
+                    בטוח שברצונך למחוק שורה זו? 
+                    <button class="btn-row" style="margin-right: 15px; background: #dc2626; color: white; border: none; padding: 4px 12px;" onclick="confirmDelete(${index})">כן, מחק</button>
+                    <button class="btn-row" style="margin-right: 5px;" onclick="render()">ביטול</button>
+                </td>
+                <td class="no-print"></td>
+            `;
+        }
+
+        function confirmDelete(index) {
+            model.splice(index, 1);
+            render();
+            saveToLocal();
+        }
+
+        function moveUp(index) {
+            if (index > 0) {
+                [model[index-1], model[index]] = [model[index], model[index-1]];
+                render();
+            }
+        }
+
+        function moveDown(index) {
+            if (index < model.length - 1) {
+                [model[index+1], model[index]] = [model[index], model[index+1]];
+                render();
+            }
+        }
+
+        function saveToLocal() {
+            const data = {
+                model,
+                customer: {
+                    name: document.getElementById('customerName').value,
+                    contact: document.getElementById('customerContact').value,
+                    phone: document.getElementById('customerPhone').value,
+                    city: document.getElementById('customerCity').value
+                },
+                meta: {
+                    date: document.getElementById('docDate').value,
+                    validity: document.getElementById('docValidity').value
+                },
+                notes: document.getElementById('generalNotes').value
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            showStatus('נשמר בהצלחה! ✅');
+        }
+
+        function loadFromLocal() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    if (data.model) model = data.model;
+                    if (data.customer) {
+                        document.getElementById('customerName').value = data.customer.name || "";
+                        document.getElementById('customerContact').value = data.customer.contact || "";
+                        document.getElementById('customerPhone').value = data.customer.phone || "";
+                        document.getElementById('customerCity').value = data.customer.city || "";
+                    }
+                    if (data.meta) {
+                        document.getElementById('docDate').value = data.meta.date || "10/02/2026";
+                        document.getElementById('docValidity').value = data.meta.validity || "30 יום";
+                    }
+                    if (data.notes) {
+                        document.getElementById('generalNotes').value = data.notes;
+                    }
+                } catch (e) {
+                    console.error("Error loading data", e);
+                }
+            }
+        }
+
+        function resetAll() {
+            if (confirm('האם אתה בטוח שברצונך לאפס את כל הנתונים? פעולה זו תמחק את כל השינויים שביצעת.')) {
+                localStorage.removeItem(STORAGE_KEY);
+                location.reload();
+            }
+        }
+
+        function showStatus(msg) {
+            const s = document.getElementById('saveStatus');
+            s.textContent = msg;
+            setTimeout(() => s.textContent = '', 3000);
+        }
+
+        function setupAutoSave() {
+            // Passive autosave every 30 seconds
+            setInterval(saveToLocal, 30000);
+            
+            // Or better: save on change
+            document.addEventListener('input', () => {
+                // We use a debounce here if needed, but for localstorage it's fine
+            });
+        }
+
+        init();
+    </script>
+</body>
+</html>
