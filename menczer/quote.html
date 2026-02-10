@@ -357,7 +357,6 @@
                         <th style="width: 40px;">#</th>
                         <th>תיאור הפריט</th>
                         <th style="width: 80px;">כמות</th>
-                        <th style="width: 80px;">עובי/מידה</th>
                         <th style="width: 100px;">מחיר יחידה</th>
                         <th style="width: 100px;">סה"כ</th>
                         <th class="no-print" style="width: 80px;">פעולות</th>
@@ -390,33 +389,33 @@
         
         let model = [
             { type: "section", title: "חלון דגם 7000" },
-            { desc: "אטם צורתי אמבטיה", qty: 460, thickness: "0.25", price: 0 },
-            { desc: "אטם צורתי עליונה", qty: 730, thickness: "0.25", price: 0 },
-            { desc: "אטם שליבה שחור", qty: 320, thickness: "1.2", price: 0 },
-            { desc: "קוביה מוקצפת", qty: 460, thickness: "0.26", price: 0 },
-            { desc: "גלגל בודד מתכוונן - פלסטיק חדש", qty: 250, thickness: "12", price: 0 },
-            { desc: 'פקק 16 מ"מ', qty: 550, thickness: "0.12", price: 0 },
-            { desc: "סגר לחלון לחץ הזז – לא פלסטיק !", qty: 750, thickness: "4.9", price: 0 },
-            { desc: "גלגל פלסטיק בודד", qty: 150, thickness: "2.3", price: 0 },
-            { desc: "אטם צורתי 3 נתיבים", qty: 84, thickness: "0.31", price: 0 },
+            { desc: "אטם צורתי אמבטיה", qty: 460, price: 0 },
+            { desc: "אטם צורתי עליונה", qty: 730, price: 0 },
+            { desc: "אטם שליבה שחור", qty: 320, price: 0 },
+            { desc: "קוביה מוקצפת", qty: 460, price: 0 },
+            { desc: "גלגל בודד מתכוונן - פלסטיק חדש", qty: 250, price: 0 },
+            { desc: 'פקק 16 מ"מ', qty: 550, price: 0 },
+            { desc: "סגר לחלון לחץ הזז – לא פלסטיק !", qty: 750, price: 0 },
+            { desc: "גלגל פלסטיק בודד", qty: 150, price: 0 },
+            { desc: "אטם צורתי 3 נתיבים", qty: 84, price: 0 },
             
             { type: "section", title: "ויטרינה 9000" },
-            { desc: "אטם צורתי עליון 3 נתיבים", qty: 200, thickness: "0.64", price: 0 },
-            { desc: "אמבטיה 3 נתיבים", qty: 200, thickness: "0.64", price: 0 },
-            { desc: "אמבטיה 2 נתיבים", qty: 50, thickness: "0.55", price: 0 },
-            { desc: "עליונה 2 נתיבים", qty: 50, thickness: "0.55", price: 0 },
-            { desc: "אטם שליבה", qty: 130, thickness: "6", price: 0 },
-            { desc: "סגר חלון לחץ הזז", qty: 50, thickness: "4.90", price: 0 },
-            { desc: "סגר מנוף + ידית חיצונית", qty: 200, thickness: "לא לספק", price: 0 },
-            { desc: "גלגל חלון כפול", qty: 25, thickness: "29", price: 0 },
-            { desc: "גלגל HD כפול לדלת", qty: 150, thickness: "68", price: 0 },
+            { desc: "אטם צורתי עליון 3 נתיבים", qty: 200, price: 0 },
+            { desc: "אמבטיה 3 נתיבים", qty: 200, price: 0 },
+            { desc: "אמבטיה 2 נתיבים", qty: 50, price: 0 },
+            { desc: "עליונה 2 נתיבים", qty: 50, price: 0 },
+            { desc: "אטם שליבה", qty: 130, price: 0 },
+            { desc: "סגר חלון לחץ הזז", qty: 50, price: 0 },
+            { desc: "סגר מנוף + ידית חיצונית", qty: 200, price: 0 },
+            { desc: "גלגל חלון כפול", qty: 25, price: 0 },
+            { desc: "גלגל HD כפול לדלת", qty: 150, price: 0 },
 
             { type: "section", title: "חלון 4500" },
-            { desc: "פינת משקוף / כנף מתיחה", qty: 1500, thickness: "לא לספק", price: 0 },
-            { desc: "פינת גומי סוס", qty: 750, thickness: "0.88", price: 0 },
-            { desc: 'מספריים לקיפ 60 ס"מ (זוג)', qty: 170, thickness: "25", price: 0 },
-            { desc: "ידית לחלון פתיחה", qty: 170, thickness: "14.9", price: 0 },
-            { desc: "פינת מגן לכנף", qty: 380, thickness: "0.31", price: 0 }
+            { desc: "פינת משקוף / כנף מתיחה", qty: 1500, price: 0 },
+            { desc: "פינת גומי סוס", qty: 750, price: 0 },
+            { desc: 'מספריים לקיפ 60 ס"מ (זוג)', qty: 170, price: 0 },
+            { desc: "ידית לחלון פתיחה", qty: 170, price: 0 },
+            { desc: "פינת מגן לכנף", qty: 380, price: 0 }
         ];
 
         function init() {
@@ -448,7 +447,7 @@
                     tr.className = 'section-header';
                     tr.innerHTML = `
                         <td></td>
-                        <td colspan="5">
+                        <td colspan="4">
                             <input type="text" class="editable-input" style="font-weight: 700; color: var(--primary);" 
                                    value="${row.title}" oninput="updateModel(${index}, 'title', this.value)">
                         </td>
@@ -472,10 +471,6 @@
                         <td>
                             <input type="number" class="editable-input" style="text-align: center;" 
                                    value="${row.qty}" oninput="updateModel(${index}, 'qty', this.value)">
-                        </td>
-                        <td>
-                            <input type="text" class="editable-input" style="text-align: center;" 
-                                   value="${row.thickness}" oninput="updateModel(${index}, 'thickness', this.value)">
                         </td>
                         <td>
                             <input type="number" step="0.01" class="editable-input" style="text-align: center;" 
@@ -530,7 +525,7 @@
                if (m.type !== 'section') {
                    const tr = document.querySelector(`tr[data-model-index="${idx}"]`);
                    if (tr) {
-                       const totalCell = tr.querySelector('td:nth-child(6)');
+                       const totalCell = tr.querySelector('td:nth-child(5)');
                        const total = (m.qty || 0) * (m.price || 0);
                        totalCell.textContent = `₪${total.toLocaleString('he-IL', {minimumFractionDigits: 2})}`;
                    }
@@ -539,7 +534,7 @@
         }
 
         function addRow() {
-            model.push({ desc: "פריט חדש", qty: 1, thickness: "-", price: 0 });
+            model.push({ desc: "פריט חדש", qty: 1, price: 0 });
             render();
         }
 
@@ -555,7 +550,7 @@
             targetRow.className = 'item-row no-print';
             targetRow.style.backgroundColor = '#fff1f2';
             targetRow.innerHTML = `
-                <td colspan="6" style="text-align: center; padding: 15px; color: #dc2626; font-weight: 700;">
+                <td colspan="5" style="text-align: center; padding: 15px; color: #dc2626; font-weight: 700;">
                     בטוח שברצונך למחוק שורה זו? 
                     <button class="btn-row" style="margin-right: 15px; background: #dc2626; color: white; border: none; padding: 4px 12px;" onclick="confirmDelete(${index})">כן, מחק</button>
                     <button class="btn-row" style="margin-right: 5px;" onclick="render()">ביטול</button>
