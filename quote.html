@@ -328,6 +328,36 @@
             margin-top: 5px;
             text-align: center;
         }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
@@ -594,12 +624,36 @@
             showStatus('נשמר בהצלחה! ✅');
         }
 
+        function showConfirm(message, onConfirm) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.innerHTML = `
+                <div class="modal-content">
+                    <div style="font-size: 48px; margin-bottom: 20px;">🗑️</div>
+                    <h3 style="margin-bottom: 15px; color: var(--text-main); font-size: 20px;">אישור פעולה</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 25px; line-height: 1.6;">${message}</p>
+                    <div style="display: flex; gap: 12px; justify-content: center;">
+                        <button id="modalConfirmBtn" class="btn btn-danger" style="min-width: 120px; justify-content: center;">כן, בטוח</button>
+                        <button id="modalCancelBtn" class="btn btn-secondary" style="min-width: 120px; justify-content: center;">ביטול</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            document.getElementById('modalConfirmBtn').onclick = () => {
+                onConfirm();
+                overlay.remove();
+            };
+            document.getElementById('modalCancelBtn').onclick = () => overlay.remove();
+            overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+        }
+
         function clearItems() {
-            if (confirm('האם אתה בטוח שברצונך למחוק את כל הפריטים?')) {
+            showConfirm('האם אתה בטוח שברצונך למחוק את כל הפריטים מהמסמך? פעולה זו תנקה את כל הטבלה.', () => {
                 model = [];
                 render();
                 saveToLocal();
-            }
+            });
         }
 
         function loadFromLocal() {
@@ -627,10 +681,10 @@
         }
 
         function resetAll() {
-            if (confirm('האם אתה בטוח שברצונך לאפס את כל הנתונים? פעולה זו תמחק את כל השינויים שביצעת.')) {
+            showConfirm('האם אתה בטוח שברצונך לאפס את הכל? פעולה זו תמחק את כל הנתונים השמורים ותחזיר את המסמך למצב התחלתי.', () => {
                 localStorage.removeItem(STORAGE_KEY);
                 location.reload();
-            }
+            });
         }
 
         function showStatus(msg) {
