@@ -141,8 +141,9 @@
         }
 
         thead {
-            background: var(--primary);
-            color: white;
+            background: #f1f5f9;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
         }
 
         th {
@@ -358,6 +359,36 @@
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* Drag & Drop Styles */
+        .dragging {
+            opacity: 0.4;
+            background-color: #f1f5f9 !important;
+            border: 2px dashed var(--primary) !important;
+        }
+
+        .drag-over {
+            border-top: 3px solid var(--primary) !important;
+        }
+
+        .drag-handle {
+            cursor: grab;
+            color: var(--text-muted);
+            font-size: 16px;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .print-only { display: none; }
+        @media print {
+            .print-only { display: inline-block !important; }
+        }
     </style>
 </head>
 <body>
@@ -373,6 +404,14 @@
             <select id="docTypeSelect" class="editable-input" style="width: 100%; border: 1px solid var(--border);" onchange="updateDocType(this.value)">
                 <option value="הצעת מחיר">הצעת מחיר</option>
                 <option value="הזמנת רכש">הזמנת רכש</option>
+            </select>
+        </div>
+
+        <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid var(--border); box-shadow: var(--shadow);">
+            <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px; color: var(--text-muted);">תמחור ברירת מחדל:</label>
+            <select id="unitTypeSelect" class="editable-input" style="width: 100%; border: 1px solid var(--border);" onchange="updatePriceHeader(this.value)">
+                <option value="מחיר יחידה">מחיר יחידה</option>
+                <option value="מחיר למטר">מחיר למטר</option>
             </select>
         </div>
 
@@ -408,10 +447,18 @@
             <table id="itemsTable">
                 <thead>
                     <tr>
+                        <th class="no-print" style="width: 30px;"></th>
                         <th style="width: 40px;">#</th>
                         <th>תיאור הפריט</th>
                         <th style="width: 120px;">כמות</th>
-                        <th style="width: 100px;">מחיר יחידה</th>
+                        <th style="width: 100px; text-align: center;">
+                            <select id="mainHeaderUnitSelect" class="editable-input no-print" style="font-weight: 600; color: var(--primary); background: transparent; width: auto; font-size: 14px; text-align: right; cursor: pointer; border: none; padding: 0;" 
+                                    onchange="updatePriceHeader(this.value)">
+                                <option value="מחיר יחידה">מחיר יחידה</option>
+                                <option value="מחיר למטר">מחיר למטר</option>
+                            </select>
+                            <span id="priceHeaderPrint" class="print-only">מחיר יחידה</span>
+                        </th>
                         <th style="width: 100px;">סה"כ</th>
                         <th class="no-print" style="width: 80px;">פעולות</th>
                     </tr>
@@ -477,14 +524,33 @@
                 const tr = document.createElement('tr');
                 tr.setAttribute('data-model-index', index);
                 
+                // Drag and drop setup
+                tr.draggable = true;
+                tr.addEventListener('dragstart', (e) => handleDragStart(e, index));
+                tr.addEventListener('dragover', handleDragOver);
+                tr.addEventListener('dragleave', handleDragLeave);
+                tr.addEventListener('drop', (e) => handleDrop(e, index));
+                tr.addEventListener('dragend', handleDragEnd);
+
                 if (row.type === 'section') {
                     tr.className = 'section-header';
+                    const unit = row.unit || "מחיר יחידה";
                     tr.innerHTML = `
+                        <td class="no-print"><div class="drag-handle">≡</div></td>
                         <td></td>
-                        <td colspan="4">
+                        <td colspan="2">
                             <input type="text" class="editable-input" style="font-weight: 700; color: var(--primary);" 
                                    value="${row.title}" oninput="updateModel(${index}, 'title', this.value)">
                         </td>
+                        <td style="text-align: center;">
+                            <select class="editable-input no-print" style="font-weight: 700; color: var(--primary); width: auto; font-size: 13px; text-align: center; cursor: pointer; padding: 0;" 
+                                    onchange="updateModel(${index}, 'unit', this.value)">
+                                <option value="מחיר יחידה" ${unit === 'מחיר יחידה' ? 'selected' : ''}>מחיר יחידה</option>
+                                <option value="מחיר למטר" ${unit === 'מחיר למטר' ? 'selected' : ''}>מחיר למטר</option>
+                            </select>
+                            <span class="print-only" style="font-weight: 700; color: var(--primary); font-size: 13px;">${unit}</span>
+                        </td>
+                        <td></td>
                         <td class="no-print">
                             <div class="row-actions">
                                 <button class="btn-row" onclick="removeRow(${index})">🗑️</button>
@@ -497,6 +563,7 @@
                     tr.className = 'item-row';
                     const total = (row.qty || 0) * (row.price || 0);
                     tr.innerHTML = `
+                        <td class="no-print"><div class="drag-handle">≡</div></td>
                         <td>${itemIndex++}</td>
                         <td>
                             <input type="text" class="editable-input" value="${row.desc}" 
@@ -524,6 +591,46 @@
             });
 
             recalc();
+        }
+
+        // Drag & Drop Handlers
+        let draggedIndex = null;
+
+        function handleDragStart(e, index) {
+            draggedIndex = index;
+            e.dataTransfer.effectAllowed = 'move';
+            e.target.classList.add('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            const targetRow = e.target.closest('tr');
+            if (targetRow) {
+                targetRow.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            const targetRow = e.target.closest('tr');
+            if (targetRow) {
+                targetRow.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e, toIndex) {
+            e.preventDefault();
+            const fromIndex = draggedIndex;
+            if (fromIndex !== null && fromIndex !== toIndex) {
+                const item = model.splice(fromIndex, 1)[0];
+                model.splice(toIndex, 0, item);
+                render();
+                saveToLocal();
+            }
+        }
+
+        function handleDragEnd() {
+            document.querySelectorAll('tr').forEach(tr => tr.classList.remove('dragging', 'drag-over'));
+            draggedIndex = null;
         }
 
         function updateModel(index, key, value) {
@@ -573,7 +680,8 @@
         }
 
         function addSection() {
-            model.push({ type: "section", title: "סעיף חדש" });
+            const defaultUnit = document.getElementById('unitTypeSelect').value;
+            model.push({ type: "section", title: "סעיף חדש", unit: defaultUnit });
             render();
         }
 
@@ -618,11 +726,21 @@
             document.title = `${type} - אנפי`;
             
             const validityWrapper = document.getElementById('validityWrapper');
-            if (type === 'הזמנת רכש') {
-                validityWrapper.style.display = 'none';
-            } else {
-                validityWrapper.style.display = 'block';
+            if (validityWrapper) {
+                validityWrapper.style.display = (type === 'הזמנת רכש') ? 'none' : 'block';
             }
+            
+            saveToLocal();
+        }
+
+        function updatePriceHeader(text) {
+            const sidebarSelect = document.getElementById('unitTypeSelect');
+            const mainSelect = document.getElementById('mainHeaderUnitSelect');
+            const printHeader = document.getElementById('priceHeaderPrint');
+            
+            if (sidebarSelect) sidebarSelect.value = text;
+            if (mainSelect) mainSelect.value = text;
+            if (printHeader) printHeader.textContent = text;
             
             saveToLocal();
         }
@@ -633,7 +751,8 @@
                 meta: {
                     date: document.getElementById('docDate').value,
                     validity: document.getElementById('docValidity').value,
-                    docType: document.getElementById('docTypeSelect').value
+                    docType: document.getElementById('docTypeSelect').value,
+                    priceHeader: document.getElementById('unitTypeSelect').value
                 },
                 notes: ""
             };
@@ -684,6 +803,10 @@
                         if (data.meta.docType) {
                             document.getElementById('docTypeSelect').value = data.meta.docType;
                             updateDocType(data.meta.docType);
+                        }
+                        if (data.meta.priceHeader) {
+                            document.getElementById('unitTypeSelect').value = data.meta.priceHeader;
+                            updatePriceHeader(data.meta.priceHeader);
                         }
                     }
                     if (data.notes) {
