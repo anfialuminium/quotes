@@ -395,9 +395,9 @@
                 <h1 id="docTitle">הצעת מחיר</h1>
                 <div class="quote-meta-item">
                     <strong>תאריך:</strong> 
-                    <input type="text" id="docDate" class="editable-input" style="width: 100px; text-align: left;" value="10/02/2026">
+                    <input type="text" id="docDate" class="editable-input" style="width: 100px; text-align: left;">
                 </div>
-                <div class="quote-meta-item">
+                <div class="quote-meta-item" id="validityWrapper">
                     <strong>תוקף:</strong> 
                     <input type="text" id="docValidity" class="editable-input" style="width: 100px; text-align: left;" value="30 יום">
                 </div>
@@ -441,10 +441,19 @@
     <script>
         const STORAGE_KEY = "anfi_quote_data_manzer";
         
+        function getTodayDate() {
+            const now = new Date();
+            const d = String(now.getDate()).padStart(2, '0');
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const y = now.getFullYear();
+            return `${d}/${m}/${y}`;
+        }
+        
         let model = [];
 
         function init() {
             loadFromLocal();
+            document.getElementById('docDate').value = getTodayDate();
             render();
             setupAutoSave();
         }
@@ -607,6 +616,14 @@
         function updateDocType(type) {
             document.getElementById('docTitle').textContent = type;
             document.title = `${type} - אנפי`;
+            
+            const validityWrapper = document.getElementById('validityWrapper');
+            if (type === 'הזמנת רכש') {
+                validityWrapper.style.display = 'none';
+            } else {
+                validityWrapper.style.display = 'block';
+            }
+            
             saveToLocal();
         }
 
@@ -663,12 +680,10 @@
                     const data = JSON.parse(saved);
                     if (data.model) model = data.model;
                     if (data.meta) {
-                        document.getElementById('docDate').value = data.meta.date || "10/02/2026";
                         document.getElementById('docValidity').value = data.meta.validity || "30 יום";
                         if (data.meta.docType) {
                             document.getElementById('docTypeSelect').value = data.meta.docType;
-                            document.getElementById('docTitle').textContent = data.meta.docType;
-                            document.title = `${data.meta.docType} - אנפי`;
+                            updateDocType(data.meta.docType);
                         }
                     }
                     if (data.notes) {
